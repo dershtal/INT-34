@@ -1,0 +1,14 @@
+---
+- name: Gather server information
+  ansible.builtin.setup:
+
+- name: Print server information
+  ansible.builtin.debug:
+    msg:
+      - "Hostname: {{ ansible_hostname }}"
+      - "Operating System: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+      - "Kernel: {{ ansible_kernel }}"
+      - "Architecture: {{ ansible_architecture }}"
+      - "Processor: {{ ansible_processor[1] }}"
+      - "Total Memory: {{ ansible_memtotal_mb }} MB"
+      - "IP Address: {{ ansible_default_ipv4.address }}"

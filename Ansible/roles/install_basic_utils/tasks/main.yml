@@ -1,0 +1,14 @@
+---
+- name: Ensure basic utilities are installed
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - vim
+    - git
+    - curl
+    - wget
+    - htop
+    - iftop
+    - net-tools

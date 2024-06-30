@@ -1,0 +1,52 @@
+---
+- name: Add PostgreSQL APT repository
+  ansible.builtin.apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add PostgreSQL repository
+  ansible.builtin.apt_repository:
+    repo: 'deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main'
+    state: present
+
+- name: Update APT package list
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install PostgreSQL
+  ansible.builtin.apt:
+    name: postgresql-16
+    state: present
+
+- name: Ensure PostgreSQL service is enabled and started
+  ansible.builtin.systemd:
+    name: postgresql
+    enabled: yes
+    state: started
+
+- name: Set PostgreSQL password for the postgres user
+  become: true
+  become_user: postgres
+  ansible.builtin.command: >
+    psql -c "ALTER USER postgres PASSWORD '{{ postgres_password }}';"
+
+- name: Check PostgreSQL service status
+  ansible.builtin.systemd:
+    name: postgresql
+    state: started
+  register: postgresql_status
+
+- name: Print PostgreSQL service status
+  debug:
+    msg: "PostgreSQL service status: {{ postgresql_status }}"
+
+- name: Check PostgreSQL connection
+  become: true
+  become_user: postgres
+  ansible.builtin.command: >
+    psql -c "SELECT version();"
+  register: postgresql_connection
+
+- name: Print PostgreSQL connection result
+  debug:
+    msg: "PostgreSQL connection result: {{ postgresql_connection.stdout }}"

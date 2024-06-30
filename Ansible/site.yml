@@ -1,0 +1,15 @@
+---
+- name: Configure Debian 10 server
+  hosts: webservers
+  become: true
+  vars_files:
+    - secret.yml
+  roles:
+    - gather_server_info
+    - configure_ssh
+    - install_fail2ban
+    - configure_auto_updates
+    - install_basic_utils
+    - install_sysstat
+    - configure_firewall
+    - install_postgresql

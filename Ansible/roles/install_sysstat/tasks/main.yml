@@ -1,0 +1,27 @@
+---
+- name: Install sysstat package
+  ansible.builtin.apt:
+    name: sysstat
+    state: present
+    update_cache: yes
+
+- name: Enable and configure sysstat
+  ansible.builtin.copy:
+    dest: /etc/default/sysstat
+    content: |
+      # sysstat configuration file.
+      #
+      # Should sadc collect system activity informations? Valid values
+      # are "true" and "false". Please do not put other values, they
+      # will be overwritten by debconf!
+      ENABLED="true"
+  notify: Restart sysstat
+
+- name: Configure cron job for sysstat
+  ansible.builtin.lineinfile:
+    path: /etc/cron.d/sysstat
+    state: present
+    regexp: '^#?5-55/10 \* \* \* \* root'
+    line: '5-55/10 * * * * root command -v debian-sa1 > /dev/null && debian-sa1 1 1'
+    backup: yes
+  notify: Restart sysstat
